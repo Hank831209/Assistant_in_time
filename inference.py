@@ -55,6 +55,7 @@ def delete_dir(path):
 
 if __name__ == '__main__':
     start_time = time.time()
+
     # 若存在路徑則刪除
     path = 'runs/detect/exp'
     if os.path.isdir(path):
