@@ -61,14 +61,15 @@ if __name__ == '__main__':
     if os.path.isdir(path):
         delete_dir(path)
 
+    # Yolov5 物件偵測
     opt = parse_opt()
     main(opt)
-
     print('Yolo執行完畢')
 
+    # 解析分割後的圖片
     img_name = '111'
-    path_img = r'./data/images/{}.jpg'.format(img_name)  # 原始圖片
-    path_txt = r'./runs/detect/exp/labels/{}.txt'.format(img_name)  # 物件偵測產出的txt
+    path_img = r'./data/images/{}.jpg'.format(img_name)  # 原始圖片放置路徑
+    path_txt = r'./runs/detect/exp/labels/{}.txt'.format(img_name)  # 物件偵測產出的座標txt
     background_hsv_list, img_person_list = cut_pic(path_img, path_txt)
 
     # 算場景色系
