@@ -7,6 +7,7 @@ from Dominant_Color import kmeans, color_check
 from clip_img import cut_pic
 from detect import parse_opt, main
 import time
+import os
 
 
 # 創建檢測器Class, 讀取讀片及預測圖片
@@ -27,7 +28,7 @@ class Detector(object):
         self.net.load_state_dict(torch.load(weight_path))
 
     # 檢測器
-    def detect(self, weight_path, pic_path, img):
+    def detect(self, weight_path, pic_path, img=False):
         self.load_weights(weight_path=weight_path)
         if not img:
             img = Image.open(pic_path).convert('RGB')
@@ -43,8 +44,22 @@ class Detector(object):
         return result
 
 
+def delete_dir(path):
+    try:
+        shutil.rmtree(path)
+    except OSError as e:
+        print(e)
+    else:
+        print("The directory is deleted successfully")
+
+
 if __name__ == '__main__':
     start_time = time.time()
+    # 若存在路徑則刪除
+    path = 'runs/detect/exp'
+    if os.path.isdir(path):
+        delete_dir(path)
+
     opt = parse_opt()
     main(opt)
 
@@ -74,16 +89,10 @@ if __name__ == '__main__':
     print('總運行時間為:\t', end_time - start_time)
 
     # time.sleep(5)
-    # # # 程式運行完刪除路徑
+    # # 程式運行完刪除路徑
     # path = 'runs/detect/exp'
     # if os.path.isdir(path):
-    #     try:
-    #         shutil.rmtree(path)
-    #     except OSError as e:
-    #         print(e)
-    #     else:
-    #         print("The directory is deleted successfully")
-
+    #     delete_dir(path)
 
 
 
