@@ -1,16 +1,15 @@
 import os
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
-import torch.optim as optim
-from torchvision.models import mobilenet_v3_small
-from torchvision.models import mobilenet_v3_large
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
 from dataset import Clothes
-import time
-import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 from pretty_confusion_matrix import pp_matrix_from_data
 
 

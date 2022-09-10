@@ -3,11 +3,10 @@ import torchvision.transforms as transforms
 from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
 from PIL import Image
 import shutil
-from Dominant_Color import kmeans, color_check
-from clip_img import cut_pic
-from yolov5_6_2.detect import parse_opt, main
 import time
 import os
+from Dominant_Color import kmeans, color_check, cut_pic
+from yolov5_6_2.detect import parse_opt, main
 
 
 # 創建檢測器Class, 讀取讀片及預測圖片
