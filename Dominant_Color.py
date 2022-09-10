@@ -7,7 +7,7 @@ import time
 
 
 def close_center(h, s, v):
-    print('執行算距離程式')
+    # print('執行算距離程式')
     color = {
         '黑': (90, 122.5, 23),
         '灰': (90, 21.5, 133),

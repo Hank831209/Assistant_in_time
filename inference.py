@@ -67,19 +67,19 @@ if __name__ == '__main__':
     print('Yolo執行完畢')
 
     # 解析分割後的圖片
-    img_name = '111'
+    img_name = '4_1121'
     path_img = r'./data/images/{}.jpg'.format(img_name)  # 原始圖片放置路徑
     path_txt = r'./runs/detect/exp/labels/{}.txt'.format(img_name)  # 物件偵測產出的座標txt
     background_hsv_list, img_person_list = cut_pic(path_img, path_txt)
 
-    # 算場景色系
+    # 場景色系
     HSV_values = kmeans(path_img, background_hsv_list, k=6, plot=False)
     print('主導色的HSV值為:\n', HSV_values)
     H, S, V = HSV_values
     Dominant_Color = color_check(H, S, V)
     print('主導色為:\n', Dominant_Color)
 
-    # 辨識人物風格
+    # 人物風格
     detector = Detector('large', num_classes=5)
     path_weights = r'best_test.pt'
     for each_person in img_person_list:
@@ -90,11 +90,11 @@ if __name__ == '__main__':
     end_time = time.time()
     print('總運行時間為:\t', end_time - start_time)
 
-    # time.sleep(5)
-    # # 程式運行完刪除路徑
-    # path = 'runs/detect/exp'
-    # if os.path.isdir(path):
-    #     delete_dir(path)
+    # 程式運行完刪除路徑
+    time.sleep(5)
+    path = 'runs/detect/exp'
+    if os.path.isdir(path):
+        delete_dir(path)
 
 
 
