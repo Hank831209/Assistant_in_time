@@ -5,7 +5,7 @@ from PIL import Image
 import shutil
 from Dominant_Color import kmeans, color_check
 from clip_img import cut_pic
-from detect import parse_opt, main
+from yolov5_6_2.detect import parse_opt, main
 import time
 import os
 
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # 若存在路徑則刪除
-    path = 'runs/detect/exp'
+    path = 'yolov5_6_2/runs/detect/exp'
     if os.path.isdir(path):
         delete_dir(path)
 
@@ -67,9 +67,9 @@ if __name__ == '__main__':
     print('Yolo執行完畢')
 
     # 解析分割後的圖片
-    img_name = '4_1121'
-    path_img = r'./data/images/{}.jpg'.format(img_name)  # 原始圖片放置路徑
-    path_txt = r'./runs/detect/exp/labels/{}.txt'.format(img_name)  # 物件偵測產出的座標txt
+    img_name = 'zidane'
+    path_img = r'./yolov5_6_2/data/images/{}.jpg'.format(img_name)  # 原始圖片放置路徑
+    path_txt = r'./yolov5_6_2/runs/detect/exp/labels/{}.txt'.format(img_name)  # 物件偵測產出的座標txt
     background_hsv_list, img_person_list = cut_pic(path_img, path_txt)
 
     # 場景色系
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     # 程式運行完刪除路徑
     time.sleep(5)
-    path = 'runs/detect/exp'
+    path = 'yolov5_6_2/runs/detect/exp'
     if os.path.isdir(path):
         delete_dir(path)
 
