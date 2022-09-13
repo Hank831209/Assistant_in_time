@@ -44,7 +44,7 @@ start_time = time.time()
 MAX_EPOCH = 300
 BATCH_SIZE = 30  # 太大的話有些電腦會出錯(GPU負荷不了會出錯)
 LR = 0.0001
-num_class = 5
+num_class = 4
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 設置GPU device
 model_name = 'large'  # 模型種類
 
@@ -60,7 +60,7 @@ test_transform = transforms.Compose([
 ])
 
 # 讀取資料
-root = r'./Data/Pic/Resize_0907A_88rate/Split_Data'
+root = r'Data/Pic/0913A/Split_Data'
 train_dir = os.path.join(root, 'train')
 test_dir = os.path.join(root, 'test')
 train_data = Clothes(data_dir=train_dir, transform=train_transform)
