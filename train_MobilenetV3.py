@@ -41,7 +41,7 @@ def plot_confusion_matrix(test_loader, net, device):
 
 # 超參數
 start_time = time.time()
-MAX_EPOCH = 300
+MAX_EPOCH = 250
 BATCH_SIZE = 30  # 太大的話有些電腦會出錯(GPU負荷不了會出錯)
 LR = 0.0001
 num_class = 4
