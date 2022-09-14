@@ -17,30 +17,30 @@ def cut_pic(path_img, path_txt):
             location.append(label_location.split(' ')[1:])
 
     img_list = list()
-    background_record = np.full_like(img, 255)  # 全白當記錄
+    # background_record = np.full_like(img, 255)  # 全白當記錄
 
     for content_img in location:
         Xmin, Ymin, Xmax, Ymax = content_img
         img_clip = img[int(Ymin):int(Ymax), int(Xmin):int(Xmax), :]  # 切出來的人
         img_clip = cv2.resize(img_clip, (224, 224))
-        background_record[int(Ymin):int(Ymax), int(Xmin):int(Xmax), :] = [0, 0, 0]  # 人的位置反黑
+        # background_record[int(Ymin):int(Ymax), int(Xmin):int(Xmax), :] = [0, 0, 0]  # 人的位置反黑
         img_list.append(img_clip)
 
-    background_record_resize = cv2.resize(background_record, (224, 224))  # for speed
+    # background_record_resize = cv2.resize(background_record, (224, 224))  # for speed
 
-    background = img.copy()
-    background = cv2.resize(background, (224, 224))
-    background_hsv = cv2.cvtColor(background, cv2.COLOR_BGR2HSV)
-    background_hsv_list = list()
-    a, b, _ = background_hsv.shape
+    # background = img.copy()
+    # background = cv2.resize(background, (224, 224))
+    # background_hsv = cv2.cvtColor(background, cv2.COLOR_BGR2HSV)
+    # background_hsv_list = list()
+    # a, b, _ = background_hsv.shape
 
-    for h in range(a):
-        for w in range(b):
-            x, y, z = background_record_resize[h, w, :]
-            if x != 0 or y != 0 or z != 0:
-                background_hsv_list.append(background_hsv[h, w, :])
+    # for h in range(a):
+    #     for w in range(b):
+    #         x, y, z = background_record_resize[h, w, :]
+    #         if x != 0 or y != 0 or z != 0:
+    #             background_hsv_list.append(background_hsv[h, w, :])
 
-    return background_hsv_list, img_list
+    return img_list
 
 
 def close_center(h, s, v):
