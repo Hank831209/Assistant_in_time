@@ -19,10 +19,20 @@ def plot_loss(epoch, train, test):  # Loss Curve
     plt.xlabel('Each Epoch')
     plt.ylabel('Total Loss')
     plt.title('Loss Curve')
-    plt.legend(["Train Loss", "Test Loss"])
+    plt.legend(['Train Loss', 'Test Loss'])
     plt.show()
 
 
+def plot_accuracy(epoch, train, test):  # Accuracy Curve
+    x = np.arange(epoch)
+    plt.plot(x, train, 'r--', x, test, 'b^')
+    plt.xlabel('Each Epoch')
+    plt.ylabel('Accuracy')
+    plt.title('Accuracy Curve')
+    plt.legend(['Train Accuracy', 'Test Accuracy'])
+    plt.show()
+
+    
 def plot_confusion_matrix(test_loader, net, device):
     cpu = torch.device('cpu')
     y_true = list()
@@ -37,16 +47,6 @@ def plot_confusion_matrix(test_loader, net, device):
             y_true.extend(label.view(-1).detach().to(cpu).numpy())
 
     pp_matrix_from_data(y_true, y_predict, cmap='rainbow', pred_val_axis='x')
-
-
-def plot_accuracy(epoch, train, test):  # Accuracy Curve
-    x = np.arange(epoch)
-    plt.plot(x, train, 'r--', x, test, 'b^')
-    plt.xlabel('Each Epoch')
-    plt.ylabel('Accuracy')
-    plt.title('Accuracy Curve')
-    plt.legend(["Train Loss", "Test Loss"])
-    plt.show()
 
 
 # 超參數
@@ -130,8 +130,8 @@ for epoch in range(MAX_EPOCH):
     accuracy = correct / total
     if accuracy > accuracy_train_global:
         torch.save(net.state_dict(), './Data/weights/best_train.pt')
-        print("訓練集準確率由：", accuracy_train_global.item(), "上升至：", accuracy.item(),
-              "已更新並保存數值為Data/weights/best_train.pt")
+        print('訓練集準確率由：', accuracy_train_global.item(), '上升至：', accuracy.item(),
+              '已更新並保存數值為Data/weights/best_train.pt')
         accuracy_train_global = accuracy
     print(r'第{}個epoch的 Train accuracy： {}%'.format(epoch, 100 * accuracy))
     print(r'第{}個epoch的 Train Total Loss： {}'.format(epoch, total_loss))
@@ -159,8 +159,8 @@ for epoch in range(MAX_EPOCH):
         accuracy = correct / total
         if accuracy > accuracy_test_global:
             torch.save(net.state_dict(), './Data/weights/best_test.pt')
-            print("準確率由：", accuracy_test_global.item(), "上升至：", accuracy.item(),
-                  "已更新並保存數值為Data/weights/best_test.pt")
+            print('準確率由：', accuracy_test_global.item(), '上升至：', accuracy.item(),
+                  '已更新並保存數值為Data/weights/best_test.pt')
             accuracy_test_global = accuracy
             best_test_net = net  # for plot
         print(r'第{}個epoch的 Test accuracy： {}%'.format(epoch, 100 * accuracy))
@@ -171,7 +171,7 @@ for epoch in range(MAX_EPOCH):
 print('最佳訓練集準確率為:\n', accuracy_train_global.item())
 print('最佳測試集準確率為:\n', accuracy_test_global.item())
 torch.save(net.state_dict(), './Data/weights/last.pt')
-print("訓練完畢，權重已保存為：Data/weights/last.pt")
+print('訓練完畢，權重已保存為：Data/weights/last.pt')
 end_time = time.time()
 print('{}個Epoch總運行時間為:\t'.format(MAX_EPOCH), (end_time - start_time) / 60, '分鐘')
 
