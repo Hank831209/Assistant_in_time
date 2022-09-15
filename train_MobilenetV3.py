@@ -39,6 +39,16 @@ def plot_confusion_matrix(test_loader, net, device):
     pp_matrix_from_data(y_true, y_predict, cmap='rainbow', pred_val_axis='x')
 
 
+def plot_accuracy(epoch, train, test):  # Accuracy Curve
+    x = np.arange(epoch)
+    plt.plot(x, train, 'r--', x, test, 'b^')
+    plt.xlabel('Each Epoch')
+    plt.ylabel('Accuracy')
+    plt.title('Accuracy Curve')
+    plt.legend(["Train Loss", "Test Loss"])
+    plt.show()
+
+
 # 超參數
 start_time = time.time()
 MAX_EPOCH = 250
@@ -46,6 +56,7 @@ BATCH_SIZE = 30  # 太大的話有些電腦會出錯(GPU負荷不了會出錯)
 LR = 0.0001
 num_class = 4
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 設置GPU device
+cpu = torch.device('cpu')
 model_name = 'large'  # 模型種類
 
 # 資料前處理
@@ -84,11 +95,15 @@ loss_func = loss_func.to(device)
 # 優化器
 optimizer = optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.99))
 
-# 訓練
+# 紀錄數據
 accuracy_train_global = torch.tensor(0)
 accuracy_test_global = torch.tensor(0)
 train_curve = list()
 test_curve = list()
+train_accuracy_curve = list()
+test_accuracy_curve = list()
+
+# 訓練
 print('開始訓練')
 for epoch in range(MAX_EPOCH):
     correct = 0.     # 每個epoch預測正確的總資料數
@@ -111,16 +126,17 @@ for epoch in range(MAX_EPOCH):
         correct += (predicted == label).sum()
         # print('training label:\n', label)
         # print('train predicted:\n', predicted)
-    train_curve.append(int(total_loss))  # for plot
     print("============================================")
     accuracy = correct / total
     if accuracy > accuracy_train_global:
         torch.save(net.state_dict(), './Data/weights/best_train.pt')
         print("訓練集準確率由：", accuracy_train_global.item(), "上升至：", accuracy.item(),
-              "已更新並保存數值為Data/weights/best_train.pkl")
+              "已更新並保存數值為Data/weights/best_train.pt")
         accuracy_train_global = accuracy
     print(r'第{}個epoch的 Train accuracy： {}%'.format(epoch, 100 * accuracy))
     print(r'第{}個epoch的 Train Total Loss： {}'.format(epoch, total_loss))
+    train_curve.append(int(total_loss))  # plot loss
+    train_accuracy_curve.append(accuracy.to(cpu).numpy())  # plot accuracy
 
     # 驗證
     net.eval()
@@ -149,8 +165,8 @@ for epoch in range(MAX_EPOCH):
             best_test_net = net  # for plot
         print(r'第{}個epoch的 Test accuracy： {}%'.format(epoch, 100 * accuracy))
         print(r'第{}個epoch的 Test Total Loss： {}'.format(epoch, total_loss))
-        test_curve.append(int(total_loss))  # for plot
-
+        test_curve.append(int(total_loss))  # plot loss
+        test_accuracy_curve.append(accuracy.to(cpu).numpy())  # plot accuracy
 
 print('最佳訓練集準確率為:\n', accuracy_train_global.item())
 print('最佳測試集準確率為:\n', accuracy_test_global.item())
@@ -161,6 +177,9 @@ print('{}個Epoch總運行時間為:\t'.format(MAX_EPOCH), (end_time - start_tim
 
 print('開始畫Loss圖')
 plot_loss(MAX_EPOCH, train_curve, test_curve)  # 畫Debug圖
+
+print('開始畫Accuracy圖')
+plot_accuracy(MAX_EPOCH, train_accuracy_curve, test_accuracy_curve)
 
 print('開始畫Confusion Matrix')
 plot_confusion_matrix(test_loader, best_test_net, device)  # 畫Confusion Matrix(最準的測試集)
