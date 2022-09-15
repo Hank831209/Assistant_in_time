@@ -59,7 +59,11 @@ num_class = 4
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 設置GPU device
 cpu = torch.device('cpu')
 model_name = 'large'  # 模型種類
-
+if torch.cuda.is_available():
+    print('使用GPU運算')
+else:
+    print('使用cpu運算')
+    
 # 資料前處理
 train_transform = transforms.Compose([
     transforms.Resize((224, 224)),
