@@ -46,7 +46,8 @@ def plot_confusion_matrix(test_loader, net, device):
             y_predict.extend(predicted.view(-1).detach().to(cpu).numpy())
             y_true.extend(label.view(-1).detach().to(cpu).numpy())
 
-    pp_matrix_from_data(y_true, y_predict, cmap='rainbow', pred_val_axis='x')
+    pp_matrix_from_data(y_true, y_predict, columns=['Baby', 'Princess', 'Casual Wear', 'Gentleman'], 
+                        cmap='rainbow', pred_val_axis='x')
 
 
 # 超參數
@@ -92,6 +93,7 @@ net = net.to(device)
 # 損失函數
 loss_func = nn.CrossEntropyLoss()
 loss_func = loss_func.to(device)
+
 # 優化器
 optimizer = optim.Adam(net.parameters(), lr=LR, betas=(0.9, 0.99))
 
@@ -135,7 +137,7 @@ for epoch in range(MAX_EPOCH):
         accuracy_train_global = accuracy
     print(r'第{}個epoch的 Train accuracy： {}%'.format(epoch, 100 * accuracy))
     print(r'第{}個epoch的 Train Total Loss： {}'.format(epoch, total_loss))
-    train_curve.append(int(total_loss))  # plot loss
+    train_curve.append(total_loss.detach().to(cpu).numpy())  # plot loss
     train_accuracy_curve.append(accuracy.to(cpu).numpy())  # plot accuracy
 
     # 驗證
@@ -165,7 +167,7 @@ for epoch in range(MAX_EPOCH):
             best_test_net = net  # for plot
         print(r'第{}個epoch的 Test accuracy： {}%'.format(epoch, 100 * accuracy))
         print(r'第{}個epoch的 Test Total Loss： {}'.format(epoch, total_loss))
-        test_curve.append(int(total_loss))  # plot loss
+        test_curve.append(total_loss.detach().to(cpu).numpy())  # plot loss
         test_accuracy_curve.append(accuracy.to(cpu).numpy())  # plot accuracy
 
 print('最佳訓練集準確率為:\n', accuracy_train_global.item())

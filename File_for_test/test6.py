@@ -1,15 +1,11 @@
-import shutil
-import os
+from cProfile import label
+from pretty_confusion_matrix import pp_matrix_from_data
+import numpy as np
 
-path = r'C:/Users/TibeMe_user/Desktop/Resize_0905/0'
-try:
-    shutil.rmtree(path)
-except OSError as e:
-    print(e)
-else:
-    print("The directory is deleted successfully")
+y_true = np.array([0, 1, 2, 3])
+y_predict = np.array([0, 2, 2, 3])
+pp_matrix_from_data(y_true, y_predict, columns=['Baby', 'Princess', 'Casual Wear', 'Gentleman'], 
+                    cmap='rainbow', pred_val_axis='x')
 
-if os.path.isdir(path):
-  print("目錄存在。")
-else:
-  print("目錄不存在。")
+
+
