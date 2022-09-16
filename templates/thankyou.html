@@ -1,0 +1,13 @@
+{% block content %}
+<div class="container">
+<p>感謝填寫，以下是您提供的訊息</p>
+<ul>
+<li>預約姓名: {{session['name']}}</li>
+<li>預約電話: {{session['ph_number']}}</li>
+<li>預約人數: {{session['people']}}</li>
+<li>預約日期: {{session['date']}}</li>
+<li>兒童寫真方案選擇: {{session['plan']}}</li>
+<li>加購項目: {{session['other_plan']}}</li>
+</ul>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% block content %}
+<div class="container">
+<form method="POST"> <!-- form 表單 -->
+  {{form.hidden_tag()}}
+  {{form.name.label(class='form-label')}} 
+  {{form.name(class='form-control')}} 
+  <br>
+  {{form.ph_number.label(class='form-label')}} 
+  {{form.ph_number(class='form-control')}} 
+  <br>
+  {{form.people.label(class='form-label')}} 
+  {{form.people(class='form-label')}}
+  <br>
+  {{form.date.label(class='form-label')}} 
+  {{form.date(class='form-control')}}
+  <br>
+  {{form.plan.label(class='form-label')}} 
+  {{form.plan(class='form-control')}}
+  <br>
+  {{form.other_plan.label(class='form-label')}} 
+  {{form.other_plan(class='form-control')}}
+  <br>
+  {{form.submit(class='btn btn-primary')}}
+</form>
+</div>
+{% endblock %}

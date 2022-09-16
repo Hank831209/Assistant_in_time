@@ -1,0 +1,11 @@
+FROM python:3.9.9
+
+WORKDIR /app
+COPY . /app
+RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+RUN pip install -r requirements_0915.txt
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6  -y
+EXPOSE 5000
+# 容器建立時會執行的指令, 本地端測試這樣寫正式啟用要用gunicorn
+ENTRYPOINT ["python", "app.py"]

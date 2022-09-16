@@ -1,0 +1,30 @@
+# for Docker-compose的版本
+version: '3.9'
+
+# Docker-compose這服務下可有很多容器, 都寫在services下
+services:
+  python-flask:
+    # 利用Dockerfile建立images, 並建立容器
+    build:
+      # context: Dockerfile的路徑
+      context: .
+      # dockerfile: 用來建立的Dockerfile名稱
+      dockerfile: Dockerfile-dev
+    # 等同 -t 可互動
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./:/app/
+    ports:
+      - "5000:5000"
+
+  # 自動生成一個可用網路
+  ngrok:
+    # 建容器時所用的images(已建立好的在DockerHub或在本地端有的images)
+    image: wernight/ngrok:latest
+    ports:
+      - "8888:4040"
+    environment:
+      NGROK_PROTOCOL: tcp
+      NGROK_PORT: python-flask:5000
+      NGROK_AUTH: 2DW4q3HB7fC0Mfb07Srdzj6e99v_7MkecfvR8hQGY1uBh5YrX

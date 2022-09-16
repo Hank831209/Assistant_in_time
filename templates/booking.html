@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <body>
+{% block content %}
+<div class="container">
+<form method="POST"> <!-- form 表單 -->
+  {{form.hidden_tag()}}
+  {{form.name.label(class='form-label')}} 
+  {{form.name(class='form-control')}} 
+  <br>
+  {{form.contact.label(class='form-label')}} 
+  {{form.contact(class='form-control')}} 
+  <br>
+  {{form.count.label(class='form-label')}} 
+  {{form.count(class='form-control')}}
+  <br>
+  {{form.option.label(class='form-label')}} 
+  {{form.option(class='form-control')}}
+  <br>
+  {{form.plus.label(class='form-label')}} 
+  {{form.plus(class='form-control')}}
+  <br>
+  {{form.submit(class='btn btn-primary')}}
+</form>
+</div>
+{% endblock %}
+</body>
