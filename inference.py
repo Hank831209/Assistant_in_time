@@ -28,7 +28,10 @@ class Detector(object):
         self.net = self.net.to(self.device)
 
     def load_weights(self, weight_path):
-        self.net.load_state_dict(torch.load(weight_path))
+        if torch.cuda.is_available():
+            self.net.load_state_dict(torch.load(weight_path))
+        else:
+            self.net.load_state_dict(torch.load(weight_path, map_location=torch.device('cpu')))
 
     # 檢測器
     def detect(self, weight_path, pic_path, img=False):
