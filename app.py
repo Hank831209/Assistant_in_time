@@ -1,24 +1,22 @@
-import datetime
-from email.mime import image
-from sqlite3 import DateFromTicks
 import time
 from flask import Flask
-# from __future__ import unicode_literals
 from flask import request, abort, render_template, session, redirect, url_for
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-from inference import model
-from flask_wtf import FlaskForm
-from wtforms import StringField, DateTimeField, SelectField, StringField, TextAreaField, SubmitField, IntegerField
-from wtforms.validators import DataRequired
-import requests
+from inference import model, delete_dir
 import json
-import configparser
 import os
-import shutil
-# from wtforms.fields.html5 import DateField
-# from urllib import parse
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request, session, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm
+from wtforms import SubmitField, SelectField, HiddenField, StringField
+from wtforms.validators import DataRequired
+from wtforms.fields.html5 import DateField
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -31,8 +29,9 @@ channelSecret = secretFile['channelSecret']
 line_bot_api = LineBotApi(channelAccessToken)
 handler = WebhookHandler(channelSecret)
 
+
 # 標準寫法基本不會改
-@app.route("/", methods=['POST'])
+@app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
@@ -47,29 +46,6 @@ def callback():
         print("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
     return 'OK'
-
-
-# def saveImg(event):
-#     # r'./yolov5_6_2/data/images'  # 圖片存到這路徑, 必須.jpg結尾
-#     if event.message.type == image:
-#         image_content = line_bot_api.get_message_content(event.message.id)
-#         image_name = image_name.upper() + '.jpg'  # image_name??
-#         path = './statics/' + image_name  
-#         with open(path, 'wb') as fd:
-#             for chunk in image_content.iter_content():
-#                 fd.write(chunk)
-
-#     model(image_name)
-#     text = '系統辨識中...'
-#     message = TextSendMessage(text=text)
-#     line_bot_api.reply_message(event.reply_token, message)
-
-#     # 解析完刪除資料夾
-#     result_path= 'yolov5_6_2/runs/detect/exp'
-#     # time.sleep(1)
-#     if os.path.isdir(result_path):
-#         shutil.rmtree(result_path)
-
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -91,43 +67,136 @@ def handle_message(event):
 
         SendImage = line_bot_api.get_message_content(event.message.id)
         img_name = str(event.message.id)  # 圖片名稱
-        path_img_save = 'yolov5_6_2/data/images/'
-        path_result_dir = 'yolov5_6_2/runs/detect/exp'
-        path_img_file = os.path.join(path_img_save, img_name + '.jpg')
+        path_img_dir = './static'
+        result_dir = './detect/exp'
+        path_img = os.path.join(path_img_dir, img_name + '.jpg')
 
-        if not os.path.exists(path_img_save):
-            os.mkdir(path_img_save)
+        if not os.path.exists(path_img_dir):
+            os.mkdir(path_img_dir)
             
         # 存圖片
-        with open(path_img_file, 'wb') as file:
+        with open(path_img, 'wb') as file:
             for img in SendImage.iter_content():
                 file.write(img)
 
         # 模型偵測
-        style_list = model(img_name, path='yolov5_6_2/runs/detect/exp', 
-                        path_weights='best_test.pt', num_classes=4, net='large')
-        print('style_list:\t', style_list)
-        if not style_list:
-            text = '未偵測到有人'
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
-        else:
-            reply_style_list = list()
+        style_list = model(path_img, yolo=True)
+                
+        if len(style_list) <= 1:  # 一人以下
+            predict_result = model(path_img, yolo=False)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=style_type[predict_result]))
+            time.sleep(1)
+            delete_dir(path_img, result_dir)
+            print('Already delete')
+        else:  # 多人照片
+            reply_list = list()
             for style in style_list:
-                reply_style_list.append(TextSendMessage(text=style_type[style]))
-            line_bot_api.reply_message(event.reply_token, reply_style_list)
-
-        # 刪除運行完物件偵測的圖片
-        if os.path.isdir(path_result_dir):
-            shutil.rmtree(path_result_dir)
-
-        # 刪除原始圖片
-        if os.path.isfile(path_img_file):
-            os.remove(path_img_file)
-
+                reply_list.append(TextSendMessage(text=style_type[style]))
+            line_bot_api.reply_message(event.reply_token, reply_list)
+            time.sleep(1)
+            delete_dir(path_img, result_dir)
+            print('Already delete')
         end_time = time.time()
         print('Total Time:\t', end_time - start_time)
 
 
+# 資料庫
+# Flask-WTF requires an enryption key - the string can be anything
+app.config['SECRET_KEY']='mykey'
+
+# Flask-Bootstrap requires this line
+Bootstrap(app)
+
+# the name of the database; add path if necessary
+db_name = 'sqlite.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:008488@34.83.236.232:3306/reserve'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# this variable, db, will be used for all SQLAlchemy commands
+db = SQLAlchemy(app)
+
+# each table in the database needs a class to be created for it
+# db.Model is required - don't change it
+# identify all columns by name and data type
+class reserve(db.Model):
+    __tablename__ = 'reserve'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    ph_number = db.Column(db.String)
+    people = db.Column(db.String)
+    date = db.Column(db.String)
+    time = db.Column(db.String)
+    option = db.Column(db.String)
+    plus = db.Column(db.String)
+    updated = db.Column(db.String)
+
+    def __init__(self, name, ph_number, people, date, time, option, plus, updated):
+        self.name = name
+        self.ph_number = ph_number
+        self.people = people
+        self.date = date
+        self.time = time
+        self.option = option
+        self.plus = plus
+        self.updated = updated
+
+# !/usr/bin/python
+# vim: set fileencoding:utf-8
+#create form
+class MyForm(FlaskForm):
+    name = StringField('預約姓名', validators=[DataRequired()])
+    ph_number = StringField('預約電話', validators=[DataRequired()])
+    people = SelectField('預約人數', choices=[('1'), ('2'), ('3'), ('4'), ('5'), ('5人以上')])
+    date =  DateField('預約日期', format='%Y-%m-%d')
+    time = SelectField('預約時間', choices=[('上午'), ('下午')])
+    option = SelectField('兒童寫真方案選擇', choices=[(r'純數位檔方案 $4,999'),(r'紀念方案 ＄8,888'),
+    (r'典藏方案 $13,500'),(r'全檔精緻方案 $18,500'),(r'成長方案-2年內拍攝3次（可包含新生兒寫真）$19,999')])
+    plus = SelectField('加購項目', choices=[(r'無',r'無'),(r'外加入鏡 $500/人(爸媽以外成員)',r'外加入鏡 $500/人(爸媽以外成員)'),
+    (r'媽媽另加妝髮造型 $1,000/套',r'媽媽另加妝髮造型 $1,000/套'),(r'兒童造型服 $500/套',r'兒童造型服 $500/套'),(r'新生兒造型 $1,000/套',r'新生兒造型 $1,000/套'),(r'外景拍攝另加 $500-3,000（依地點報價）',r'外景拍攝另加 $500-3,000（依地點報價）')])
+    updated = HiddenField()
+    submit = SubmitField("確認")
+
+
+# home pag
+@app.route('/',methods=['GET','POST'])
+def index():
+    """首頁"""
+    form = MyForm()
+    if form.validate_on_submit():
+        session['name'] =form.name.data
+        session['ph_number'] = form.ph_number.data
+        session['people'] = form.people.data
+        session['date'] = form.date.data
+        session['time'] = form.time.data
+        session['option'] = form.option.data
+        session['plus'] = form.plus.data
+        
+        name = request.form['name']
+        ph_number = request.form['ph_number']
+        people = request.form['people']
+        date = request.form['date']
+        time = request.form['time']
+        option = request.form['option']
+        plus = request.form['plus']
+        
+        # get today's date from function, above all the routes
+        updated = datetime.now()
+        # the data to be inserted into Sock model - the table, socks
+        print('name:\t', name)
+        record = reserve(name, ph_number, people, date, time, option, plus, updated)
+        # Flask-SQLAlchemy magic adds record to database
+        db.session.add(record)
+        db.session.commit()
+        
+        return redirect(url_for('thankyou'))
+    return render_template('reserve.html', form=form)
+
+@app.route('/thankyou')
+def thankyou():
+    """thankyou頁"""
+    return render_template('thankyou.html')
 
 
 if __name__ == "__main__":

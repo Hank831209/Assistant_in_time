@@ -59,10 +59,6 @@ num_class = 4
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 設置GPU device
 cpu = torch.device('cpu')
 model_name = 'large'  # 模型種類
-if torch.cuda.is_available():
-    print('使用GPU運算')
-else:
-    print('使用cpu運算')
     
 # 資料前處理
 train_transform = transforms.Compose([
@@ -130,8 +126,6 @@ for epoch in range(MAX_EPOCH):
         _, predicted = torch.max(F.softmax(out.data, dim=1), dim=1)
         total += label.size(0)  # 總資料數
         correct += (predicted == label).sum()
-        # print('training label:\n', label)
-        # print('train predicted:\n', predicted)
     print("============================================")
     accuracy = correct / total
     if accuracy > accuracy_train_global:
@@ -156,9 +150,6 @@ for epoch in range(MAX_EPOCH):
             loss = loss_func(out, label)
             total_loss += loss
             _, predicted = torch.max(F.softmax(out.data, dim=1), dim=1)
-            # print('valid label:\n', label)
-            # print('valid predicted:\n', predicted)
-
             total += label.size(0)
             correct += (predicted == label).sum()
 

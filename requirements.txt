@@ -1,0 +1,43 @@
+# Flask
+Flask
+Flask-SQLAlchemy
+Flask-Bootstrap
+Flask-WTF
+WTForms==2.3.3
+pymysql
+uwsgi
+
+# line
+line-bot-sdk
+
+# inference
+scikit-learn
+
+# model
+
+# train, dataset
+# pretty_confusion_matrix  # 未安裝
+
+# Yolo
+Pillow
+tqdm
+scipy
+seaborn
+torch>=1.7.0  # 未安裝
+torchvision>=0.8.1
+matplotlib
+numpy
+opencv-python
+PyYAML
+requests
+protobuf
+tensorboard
+pandas
+ipython  # interactive notebook
+psutil  # system utilization
+thop  # FLOPs computation
+
+
+
+
+

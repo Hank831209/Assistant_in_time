@@ -6,43 +6,6 @@ import cv2
 # import time
 
 
-def cut_pic(path_img, path_txt):
-    img = cv2.imread(path_img)
-    with open(path_txt, mode='r') as file:
-        content = file.read()
-        
-    location = list()
-    for label_location in content.split('\n'):
-        if label_location:
-            location.append(label_location.split(' ')[1:])
-
-    img_list = list()
-    # background_record = np.full_like(img, 255)  # 全白當記錄
-
-    for content_img in location:
-        Xmin, Ymin, Xmax, Ymax = content_img
-        img_clip = img[int(Ymin):int(Ymax), int(Xmin):int(Xmax), :]  # 切出來的人
-        img_clip = cv2.resize(img_clip, (224, 224))
-        # background_record[int(Ymin):int(Ymax), int(Xmin):int(Xmax), :] = [0, 0, 0]  # 人的位置反黑
-        img_list.append(img_clip)
-
-    # background_record_resize = cv2.resize(background_record, (224, 224))  # for speed
-
-    # background = img.copy()
-    # background = cv2.resize(background, (224, 224))
-    # background_hsv = cv2.cvtColor(background, cv2.COLOR_BGR2HSV)
-    # background_hsv_list = list()
-    # a, b, _ = background_hsv.shape
-
-    # for h in range(a):
-    #     for w in range(b):
-    #         x, y, z = background_record_resize[h, w, :]
-    #         if x != 0 or y != 0 or z != 0:
-    #             background_hsv_list.append(background_hsv[h, w, :])
-
-    return img_list
-
-
 def close_center(h, s, v):
     # print('執行算距離程式')
     color = {
@@ -142,17 +105,8 @@ def kmeans(path, img_list, k=6, plot=True):
 
 
 if __name__ == '__main__':
-    # start_time = time.time()
+    a = 1
 
-    # 切出只剩下背景主導色 0.37s
-    path_img = r'../yolov5-6.2/runs/detect/exp7/3_1734.jpg'  # 原始圖片
-    path_txt = r'../yolov5-6.2/runs/detect/exp7/labels/3_1734.txt'  # 物件偵測產出的txt
-    background_hsv_list, _ = cut_pic(path_img, path_txt)
-    HSV_values = kmeans(path_img, background_hsv_list, k=6, plot=False)
-    # print('主導色的HSV值為:\n', HSV_values)
-    H, S, V = HSV_values
-    Dominant_Color = color_check(H, S, V)
-    print('主導色為:\n', Dominant_Color)
 
 
 
