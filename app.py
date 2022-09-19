@@ -110,7 +110,7 @@ Bootstrap(app)
 # the name of the database; add path if necessary
 db_name = 'sqlite.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:008488@34.83.236.232:3306/reserve'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql:...'  # 自己改
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
