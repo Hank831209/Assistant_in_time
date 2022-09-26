@@ -5,17 +5,19 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
-from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, vgg16, resnet50
 from dataset import Clothes
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-from pretty_confusion_matrix import pp_matrix_from_data
+import seaborn as sebrn
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as atlas
 
 
 def plot_loss(epoch, train, test):  # Loss Curve
     x = np.arange(epoch)
-    plt.plot(x, train, 'r--', x, test, 'b^')
+    plt.plot(x, train, 'r--', x, test, 'b-')
     plt.xlabel('Each Epoch')
     plt.ylabel('Total Loss')
     plt.title('Loss Curve')
@@ -25,7 +27,7 @@ def plot_loss(epoch, train, test):  # Loss Curve
 
 def plot_accuracy(epoch, train, test):  # Accuracy Curve
     x = np.arange(epoch)
-    plt.plot(x, train, 'r--', x, test, 'b^')
+    plt.plot(x, train, 'r--', x, test, 'b-')
     plt.xlabel('Each Epoch')
     plt.ylabel('Accuracy')
     plt.title('Accuracy Curve')
@@ -46,29 +48,43 @@ def plot_confusion_matrix(test_loader, net, device):
             y_predict.extend(predicted.view(-1).detach().to(cpu).numpy())
             y_true.extend(label.view(-1).detach().to(cpu).numpy())
 
-    pp_matrix_from_data(y_true, y_predict, columns=['Baby', 'Princess', 'Casual Wear', 'Gentleman'], 
-                        cmap='rainbow', pred_val_axis='x')
+    # pp_matrix_from_data(y_true, y_predict, columns=['Baby', 'Princess', 'Casual Wear', 'Gentleman'], 
+    #                     cmap='rainbow', pred_val_axis='x')
+    conf_matrix = confusion_matrix(y_true, y_predict, labels=[0, 1, 2, 3])
+    # Using Seaborn heatmap to create the plot
+    fx = sebrn.heatmap(conf_matrix, annot=True, cmap='turbo')
+
+    # labels the title and x, y axis of plot
+    fx.set_title('Confusion Matrix')
+    fx.set_xlabel('Predicted')
+    fx.set_ylabel('Actual')
+
+    # labels the boxes
+    fx.xaxis.set_ticklabels(['Baby', 'Princess', 'Casual Wear', 'Gentleman'])
+    fx.yaxis.set_ticklabels(['Baby', 'Princess', 'Casual Wear', 'Gentleman'])
+
+    atlas.show()
 
 
 # 超參數
 start_time = time.time()
-MAX_EPOCH = 250
+MAX_EPOCH = 2
 BATCH_SIZE = 30  # 太大的話有些電腦會出錯(GPU負荷不了會出錯)
 LR = 0.0001
 num_class = 4
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 設置GPU device
 cpu = torch.device('cpu')
-model_name = 'large'  # 模型種類
+# model_name = 'large'  # 模型種類
     
 # 資料前處理
 train_transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.ToTensor(),
+    transforms.ToTensor()
 ])
 
 test_transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.ToTensor(),
+    transforms.ToTensor()
 ])
 
 # 讀取資料
@@ -83,11 +99,8 @@ train_loader = DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=Tru
 test_loader = DataLoader(dataset=test_data, batch_size=BATCH_SIZE, shuffle=True, drop_last=False)
 print('已讀取完資料')
 
-# 建立模型
-if model_name == 'small':
-    net = mobilenet_v3_small(num_classes=num_class)
-else:
-    net = mobilenet_v3_large(num_classes=num_class)
+net = mobilenet_v3_large(num_classes=num_class)
+# net = resnet50(num_classes=num_class)
 net = net.to(device)
 
 # 損失函數
@@ -128,11 +141,11 @@ for epoch in range(MAX_EPOCH):
         correct += (predicted == label).sum()
     print("============================================")
     accuracy = correct / total
-    if accuracy > accuracy_train_global:
-        torch.save(net.state_dict(), './Data/weights/best_train.pt')
-        print('訓練集準確率由：', accuracy_train_global.item(), '上升至：', accuracy.item(),
-              '已更新並保存數值為Data/weights/best_train.pt')
-        accuracy_train_global = accuracy
+    # if accuracy > accuracy_train_global:
+    #     torch.save(net.state_dict(), './Data/weights/best_train.pt')
+    #     print('訓練集準確率由：', accuracy_train_global.item(), '上升至：', accuracy.item(),
+    #           '已更新並保存數值為Data/weights/best_train.pt')
+    #     accuracy_train_global = accuracy
     print(r'第{}個epoch的 Train accuracy： {}%'.format(epoch, 100 * accuracy))
     print(r'第{}個epoch的 Train Total Loss： {}'.format(epoch, total_loss))
     train_curve.append(total_loss.detach().to(cpu).numpy())  # plot loss

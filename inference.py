@@ -1,6 +1,6 @@
 import torch
 import torchvision.transforms as transforms
-from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, vgg16, resnet50
 from PIL import Image
 import shutil
 import time
@@ -49,6 +49,10 @@ class Detector(object):
             self.net = mobilenet_v3_large(num_classes=num_classes)
         elif kind == 'small':
             self.net = mobilenet_v3_small(num_classes=num_classes)
+        elif kind == 'vgg16':
+            self.net = vgg16(num_classes=num_classes)
+        elif kind == 'resnet50':
+            self.net = resnet50(num_classes=num_classes)
 
         self.net.eval()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 設置GPU device
@@ -116,36 +120,26 @@ def model(path_img, yolo=True, result_dir='./detect/exp',
 
 if __name__ == '__main__':
     start_time = time.time()
-    pic_path = 'static/1_1.jpg'
-    result = model(pic_path, yolo=True)
-    print('預測結果為:\t', result)
-    print('type(result)', type(result))
+    path_img = '1_1.jpg'
+    net = 'resnet50'
+    path_weight = 'Data/專題數據/Resnet50_90%/best_test.pt'
+    detector = Detector(net, num_classes=4)
+    start_time = time.time()
+    for i in range(10):
+        result = detector.detect(path_weight, path_img)  # 丟圖片路徑即可
+        # print('預測結果為:\t', result)
     end_time = time.time()
-    print('總時間:\t', end_time - start_time)
-
-
-    '''
-    path_img = r'./yolov5_6_2/data/images'  # 照片要存到這個資料夾裡面
-    path= 'yolov5_6_2/runs/detect/exp'  # 模型跑完之後的圖片會存到這邊
-    result = model('4_1121')  # 回傳照片每個人的服裝風格(list形式), 傳入照片名稱(不用+.jpg)
-    建議在最後整個運行完之後把資料夾刪掉, 可以自行斟酌要不要+延遲時間
-    '''
-    # start_time = time.time()
-    # result = model('16794691849152')  
-    # print('result:\t', result)
-    # if not result:
-    #     print('未偵測到照片有人')
-    # else:
-    #     for i in result:
-    #         print('預測結果為:\t', i)
-    # end_time = time.time()
-    # print('總運行時間為:\t', end_time - start_time)
+    print('預測時間為:\t', end_time - start_time)
     
-    # time.sleep(3)
-    # # 若存在路徑則刪除
-    # path= 'yolov5_6_2/runs/detect/exp'
-    # if os.path.isdir(path):
-    #     delete_dir(path)
+    # start_time = time.time()
+    # n = 100
+    # for i in range(n):
+    #     path_img = '1_1.jpg'
+    #     detector = Detector('large', num_classes=4)
+    #     result = detector.detect('best.pt', path_img)  # 丟圖片路徑即可
+    # end_time = time.time()
+    # print('總時間:\t', end_time - start_time)
+
 
 
 
