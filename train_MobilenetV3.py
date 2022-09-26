@@ -12,7 +12,6 @@ import numpy as np
 import time
 import seaborn as sebrn
 from sklearn.metrics import confusion_matrix
-import matplotlib.pyplot as atlas
 
 
 def plot_loss(epoch, train, test):  # Loss Curve
@@ -63,7 +62,7 @@ def plot_confusion_matrix(test_loader, net, device):
     fx.xaxis.set_ticklabels(['Baby', 'Princess', 'Casual Wear', 'Gentleman'])
     fx.yaxis.set_ticklabels(['Baby', 'Princess', 'Casual Wear', 'Gentleman'])
 
-    atlas.show()
+    plt.show()
 
 
 # 超參數
