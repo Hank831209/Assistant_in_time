@@ -69,7 +69,9 @@ def handle_message(event):
 
     if not os.path.exists(path_img_dir):
         os.mkdir(path_img_dir)
-            
+    if not os.path.exists('./detect'):
+        os.mkdir('./detect')
+
     # 存圖片
     with open(path_img, 'wb') as file:
         for img in SendImage.iter_content():
