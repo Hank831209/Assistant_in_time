@@ -1,26 +1,51 @@
-{% block content %}
-<div class="container">
-<form method="POST"> <!-- form 表單 -->
-  {{form.hidden_tag()}}
-  {{form.name.label(class='form-label')}} 
-  {{form.name(class='form-control')}} 
-  <br>
-  {{form.ph_number.label(class='form-label')}} 
-  {{form.ph_number(class='form-control')}} 
-  <br>
-  {{form.people.label(class='form-label')}} 
-  {{form.people(class='form-label')}}
-  <br>
-  {{form.date.label(class='form-label')}} 
-  {{form.date(class='form-control')}}
-  <br>
-  {{form.plan.label(class='form-label')}} 
-  {{form.plan(class='form-control')}}
-  <br>
-  {{form.other_plan.label(class='form-label')}} 
-  {{form.other_plan(class='form-control')}}
-  <br>
-  {{form.submit(class='btn btn-primary')}}
-</form>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>預約表單</title>
+  </head>
+
+  <body>
+
+    {% block content %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <div class="container">
+      <form method="POST"> <!-- form 表單 -->
+
+        <div class="mb-3">
+        {{form.hidden_tag()}}
+        {{form.name.label(class='form-label')}} 
+        {{form.name(class='form-control')}} 
+        <br>
+        {{form.ph_number.label(class='form-label')}} 
+        {{form.ph_number(class='form-control')}} 
+        <br>
+        {{form.people.label(class='form-label')}} 
+        {{form.people(class='form-control')}}
+        <br>
+        {{form.date.label(class='form-label')}} 
+        {{form.date(class='form-control')}}
+        <br>
+        {{form.time.label(class='form-label')}} 
+        {{form.time(class='form-control')}}
+        <br>
+        {{form.option.label(class='form-label')}} 
+        {{form.option(class='form-control')}}
+        <br>
+        {{form.plus.label(class='form-label')}} 
+        {{form.plus(class='form-control')}}
+        <br>
+        {{form.submit(class='btn btn-primary')}}
+
+        
+        </div>
+      </form>
+    </div>
+    {% endblock %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+  </body>
+</html>

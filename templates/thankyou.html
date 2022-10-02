@@ -1,13 +1,42 @@
-{% block content %}
-<div class="container">
-<p>感謝填寫，以下是您提供的訊息</p>
-<ul>
-<li>預約姓名: {{session['name']}}</li>
-<li>預約電話: {{session['ph_number']}}</li>
-<li>預約人數: {{session['people']}}</li>
-<li>預約日期: {{session['date']}}</li>
-<li>兒童寫真方案選擇: {{session['plan']}}</li>
-<li>加購項目: {{session['other_plan']}}</li>
-</ul>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>表單</title>
+    </head>
+
+    <body>
+        {% block content %}
+        <div class="container">
+            <p class="fs-1">感謝填寫，以下是您提供的訊息</p>
+            <ul>
+                <li>
+                    <p class="fs-2">預約姓名: {{session['name']}}</p>
+                </li>
+                <li>
+                    <p class="fs-2">預約電話: {{session['ph_number']}}</p>
+                </li>
+                <li>
+                    <p class="fs-2">預約人數: {{session['people']}}</p>
+                </li>
+                <li>
+                    <p class="fs-2">預約日期: {{session['date']}}</p>
+                </li>
+                <li>
+                    <p class="fs-2">預約時間: {{session['time']}}</p>
+                </li>
+                <li>
+                    <p class="fs-2">兒童寫真方案選擇: {{session['option']}}</p>
+                </li>
+                <li>
+                    <p class="fs-2">加購項目: {{session['plus']}}</p>
+                </li>
+            </ul>
+        </div>
+        {% endblock %}
+
+        
+    </body>
+</html>

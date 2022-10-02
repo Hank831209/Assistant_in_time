@@ -1,15 +1,11 @@
 import time
-from flask import Flask
-from flask import request, abort, render_template, session, redirect, url_for
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 from inference import model, delete_dir
 import json
 import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, abort, render_template, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
@@ -17,6 +13,7 @@ from wtforms import SubmitField, SelectField, HiddenField, StringField
 from wtforms.validators import DataRequired
 from wtforms.fields.html5 import DateField
 from datetime import datetime
+import pymysql
 
 
 app = Flask(__name__)
@@ -48,56 +45,55 @@ def callback():
     return 'OK'
 
 
-@handler.add(MessageEvent, message=TextMessage)
+# @handler.add(MessageEvent, message=TextMessage)
+# def handle_message(event):
+#     text = event.message.text + '我好帥'
+#     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
+
+
+@handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
-    text = event.message.text + '我好帥'
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
+    start_time = time.time()
+    style_type = {
+        0: '服飾風格：幼兒服', 
+        1: '服飾風格：公主風',
+        2: '服飾風格：休閒風',
+        3: '服飾風格：紳士風'
+    }
 
+    SendImage = line_bot_api.get_message_content(event.message.id)
+    img_name = str(event.message.id)  # 圖片名稱
+    path_img_dir = './static'
+    result_dir = './detect/exp'
+    path_img = os.path.join(path_img_dir, img_name + '.jpg')
 
-@handler.add(MessageEvent)
-def handle_message(event):
-    if (event.message.type == "image"):
-        start_time = time.time()
-        style_type = {
-            0: 'Baby', 
-            1: 'Princess',
-            2: 'Casual Wear',
-            3: 'Gentleman'
-        }
-
-        SendImage = line_bot_api.get_message_content(event.message.id)
-        img_name = str(event.message.id)  # 圖片名稱
-        path_img_dir = './static'
-        result_dir = './detect/exp'
-        path_img = os.path.join(path_img_dir, img_name + '.jpg')
-
-        if not os.path.exists(path_img_dir):
-            os.mkdir(path_img_dir)
+    if not os.path.exists(path_img_dir):
+        os.mkdir(path_img_dir)
             
-        # 存圖片
-        with open(path_img, 'wb') as file:
-            for img in SendImage.iter_content():
-                file.write(img)
+    # 存圖片
+    with open(path_img, 'wb') as file:
+        for img in SendImage.iter_content():
+            file.write(img)
 
-        # 模型偵測
-        style_list = model(path_img, yolo=True)
+    # 模型偵測
+    style_list = model(path_img, yolo=True)
                 
-        if len(style_list) <= 1:  # 一人以下
-            predict_result = model(path_img, yolo=False)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=style_type[predict_result]))
-            time.sleep(1)
-            delete_dir(path_img, result_dir)
-            print('Already delete')
-        else:  # 多人照片
-            reply_list = list()
-            for style in style_list:
-                reply_list.append(TextSendMessage(text=style_type[style]))
-            line_bot_api.reply_message(event.reply_token, reply_list)
-            time.sleep(1)
-            delete_dir(path_img, result_dir)
-            print('Already delete')
-        end_time = time.time()
-        print('Total Time:\t', end_time - start_time)
+    if len(style_list) <= 1:  # 一人以下
+        predict_result = model(path_img, yolo=False)
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=style_type[predict_result]))
+        time.sleep(1)
+        delete_dir(path_img, result_dir)
+        print('Already delete')
+    else:  # 多人照片
+        reply_list = list()
+        for style in style_list:
+            reply_list.append(TextSendMessage(text=style_type[style]))
+        line_bot_api.reply_message(event.reply_token, reply_list)
+        time.sleep(1)
+        delete_dir(path_img, result_dir)
+        print('Already delete')
+    end_time = time.time()
+    print('Total Time:\t', end_time - start_time)
 
 
 # 資料庫
@@ -110,8 +106,8 @@ Bootstrap(app)
 # the name of the database; add path if necessary
 db_name = 'sqlite.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql:...'  # 自己改
-
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:008488@34.83.236.232:3306/reserve'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:008488@35.192.97.51:3306/project'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # this variable, db, will be used for all SQLAlchemy commands
@@ -200,4 +196,5 @@ def thankyou():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
+    app.run()
