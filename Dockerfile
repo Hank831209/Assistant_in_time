@@ -1,13 +1,13 @@
-FROM python:3.9.9
-
-# Copy local code to the container image.
-WORKDIR /app
-COPY . /app
-
-# 如果裝太久會停掉
-RUN pip install --default-timeout=100 -r requirements.txt
-
-# CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
-# python不穩定得用gunicorn來啟
-CMD gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
-# CMD uwsgi -w app:app -s :3000 -d app.log
+FROM ubuntu:18.04
+WORKDIR /LilyBubble
+COPY . ./
+ENV TZ=Asia/Taipei
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
+RUN echo $TZ > /etc/timezone
+RUN apt-get update
+RUN apt-get install -y python3-pip tzdata
+RUN dpkg-reconfigure -f noninteractive tzdata
+RUN python3 -m pip install --upgrade pip
+RUN apt-get install ffmpeg libsm6 libxext6 -y
+RUN python3 -m pip install -r requirements.txt 
+CMD uwsgi -w app:app --http-socket :$PORT
