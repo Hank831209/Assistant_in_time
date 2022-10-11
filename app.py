@@ -250,6 +250,14 @@ def index():
         return render_template('reserve.html', form=form, Error=Error)  # 保持留在該頁面
 
 
+# @handler.add(MessageEvent, message=TextMessage)
+# def handle_message(event):
+#     if event.message.text == '預約表單':
+#         user_id = event.source.user_id
+#         url_user_id = 'https://2c9a-114-43-185-141.jp.ngrok.io' + f'/{user_id}'
+#         line_bot_api.reply_message(reply_token=event.reply_token, messages=TextSendMessage(text=url_user_id))
+
+
 @app.route('/create')
 def create():
     # Create data
