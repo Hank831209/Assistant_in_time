@@ -13,25 +13,25 @@
             <p class="fs-1">感謝填寫，以下是您提供的訊息</p>
             <ul>
                 <li>
-                    <p class="fs-2">預約姓名: {{session['name']}}</p>
+                    <p class="fs-2">預約姓名: {{form_data['name']}}</p>
                 </li>
                 <li>
-                    <p class="fs-2">預約電話: {{session['ph_number']}}</p>
+                    <p class="fs-2">預約電話: {{form_data['tel']}}</p>
                 </li>
                 <li>
-                    <p class="fs-2">預約人數: {{session['people']}}</p>
+                    <p class="fs-2">預約人數: {{form_data['num_people']}}</p>
                 </li>
                 <li>
-                    <p class="fs-2">預約日期: {{session['date']}}</p>
+                    <p class="fs-2">預約日期: {{form_data['reserve_date']}}</p>
                 </li>
                 <li>
-                    <p class="fs-2">預約時間: {{session['time']}}</p>
+                    <p class="fs-2">預約時間: {{form_data['AM_PM']}}</p>
                 </li>
                 <li>
-                    <p class="fs-2">兒童寫真方案選擇: {{session['option']}}</p>
+                    <p class="fs-2">兒童寫真方案選擇: {{form_data['option']}}</p>
                 </li>
                 <li>
-                    <p class="fs-2">加購項目: {{session['plus']}}</p>
+                    <p class="fs-2">加購項目: {{form_data['plus']}}</p>
                 </li>
             </ul>
         </div>
